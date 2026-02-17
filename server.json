@@ -1,0 +1,45 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
+  "name": "forage",
+  "description": "Self-improving tool discovery for AI agents. Discover, install, and learn to use new MCP servers automatically — no restarts needed. Searches the Official MCP Registry, Smithery, and npm.",
+  "repository": {
+    "url": "https://github.com/isaac-levine/forage",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "forage-mcp",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ],
+  "tools": [
+    {
+      "name": "forage_search",
+      "description": "Search for MCP servers and tools across registries. Describe what capability you need and get ranked results."
+    },
+    {
+      "name": "forage_evaluate",
+      "description": "Get detailed information about a specific package — version, downloads, README summary, install command."
+    },
+    {
+      "name": "forage_install",
+      "description": "Install an MCP server and start it as a proxied subprocess. Tools become available immediately — no restart needed."
+    },
+    {
+      "name": "forage_learn",
+      "description": "Write usage instructions to agent rule files (CLAUDE.md, AGENTS.md, .cursor/rules/) for cross-session persistence."
+    },
+    {
+      "name": "forage_status",
+      "description": "List all tools that Forage has installed and is currently proxying."
+    },
+    {
+      "name": "forage_uninstall",
+      "description": "Remove a previously installed tool. Stops the server, removes from manifest, and cleans up agent rules."
+    }
+  ]
+}
