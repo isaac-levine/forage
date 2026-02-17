@@ -1,19 +1,31 @@
-# Forage
+<div align="center">
+
+# 🌿 Forage
 
 **Self-improving tool discovery for AI agents.**
 
+Install one MCP server. Your agent finds the rest.
+
 [![npm version](https://img.shields.io/npm/v/forage-mcp.svg)](https://www.npmjs.com/package/forage-mcp)
+[![npm downloads](https://img.shields.io/npm/dm/forage-mcp.svg)](https://www.npmjs.com/package/forage-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Forage is an MCP server that lets AI agents discover, install, and learn to use new tools — automatically. When an agent hits a wall, it forages for the right tool, installs it, and teaches itself how to use it. The agent gets permanently smarter.
+[npm](https://www.npmjs.com/package/forage-mcp) · [GitHub](https://github.com/isaac-levine/forage) · [Contributing](CONTRIBUTING.md)
 
-## The Problem
+</div>
 
-AI coding agents are limited to whatever tools they're configured with at session start. When an agent needs to query a database, deploy to Vercel, or search Slack, it apologizes and the human manually installs the right MCP server. This is the bottleneck of agentic development.
+---
 
-## The Solution
+Forage is an MCP server that lets AI agents discover, install, and learn to use new tools — automatically. When an agent hits a wall, it forages for the right tool, installs it, and teaches itself how to use it. No restarts. No manual config. The agent gets permanently smarter.
 
-Forage closes the self-improvement loop:
+<!-- TODO: Add demo GIF here -->
+<!-- ![Forage demo](assets/demo.gif) -->
+
+## Why?
+
+AI coding agents are limited to whatever tools they're configured with at session start. Need to query a database? Deploy to Vercel? Search Slack? The agent apologizes and you manually install the right MCP server.
+
+Forage closes that loop:
 
 ```
 Agent encounters a task it can't do
@@ -26,19 +38,19 @@ Agent encounters a task it can't do
 
 ## Quick Start
 
-### Claude Code
+**Claude Code**
 
 ```bash
 claude mcp add forage -- npx -y forage-mcp
 ```
 
-### Cursor
+**Cursor**
 
 ```bash
 npx forage-mcp init --client cursor
 ```
 
-Then start a new session. Forage is ready.
+That's it. Start a new session and Forage is ready.
 
 ## Tools
 
@@ -53,15 +65,16 @@ Then start a new session. Forage is ready.
 
 ## How It Works
 
-Forage is an MCP server that acts as a **gateway/proxy**:
+Forage is a **gateway/proxy** MCP server:
 
 1. **You install Forage once** — it's the only MCP server you configure manually
 2. **Forage discovers tools** — searches the Official MCP Registry, Smithery, and npm in parallel
 3. **Forage installs tools** — starts them as child processes, wraps their capabilities
-4. **No restart needed** — Forage emits `list_changed` notifications, agent picks up new tools instantly
+4. **No restart needed** — emits `list_changed` notifications so the agent picks up new tools instantly
 5. **Knowledge persists** — `forage_learn` writes to agent rule files, manifest auto-starts tools next session
 
-### Architecture
+<details>
+<summary><strong>Architecture</strong></summary>
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -86,8 +99,6 @@ Forage is an MCP server that acts as a **gateway/proxy**:
 └─────────────────────────────────────────────┘
 ```
 
-### The Proxy Pattern
-
 When you install a tool through Forage:
 
 1. Forage runs `npx -y <package>` as a child process
@@ -97,7 +108,10 @@ When you install a tool through Forage:
 5. Sends `tools/list_changed` notification — the agent sees new tools immediately
 6. When the agent calls a proxied tool, Forage forwards the call to the child server
 
-## Persistence
+</details>
+
+<details>
+<summary><strong>Persistence</strong></summary>
 
 Forage stores its state in `~/.forage/`:
 
@@ -108,6 +122,8 @@ Forage stores its state in `~/.forage/`:
 | `cache/` | Cached registry search results |
 
 On startup, Forage reads the manifest and auto-starts all previously installed servers. Your agent picks up right where it left off.
+
+</details>
 
 ## CLI
 
@@ -122,7 +138,9 @@ forage init --client cursor          # Set up for Cursor
 
 ## Security
 
-- **Human approval required** — `forage_install` always requires explicit `confirm: true`. The agent cannot install tools without the user approving the tool call.
+> [!IMPORTANT]
+> Forage cannot install tools without explicit user approval. Every `forage_install` call requires `confirm: true`.
+
 - **Audit trail** — every install/uninstall is logged with timestamps to `~/.forage/install-log.json`
 - **No remote backend** — everything runs locally. Registry searches are read-only GET requests to public APIs.
 - **No secrets stored** — environment variables for child servers are passed at install time, not persisted.
@@ -146,11 +164,30 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
 ## Roadmap
 
+### Features
+
 - [ ] `forage update` — check for newer versions of installed tools
 - [ ] Support for pip/cargo/brew packages (not just npm)
 - [ ] Smarter search ranking (weight by downloads, stars, description relevance)
-- [ ] `server.json` submission to the Official MCP Registry
+- [ ] Auto-configure environment variables from `.env` files
+- [ ] `forage doctor` — diagnose common setup issues
+
+### Distribution
+
+- [x] Publish to npm
+- [ ] Submit to the [Official MCP Registry](https://registry.modelcontextprotocol.io)
+- [ ] Submit to [Smithery](https://smithery.ai)
+- [ ] Submit to [mcp.so](https://mcp.so) and [glama.ai](https://glama.ai/mcp/servers)
 - [ ] Landing page at forage.dev
+
+### Community
+
+- [ ] Demo GIF / video in README
+- [ ] Write launch blog post
+- [ ] Post to r/ClaudeAI, r/LocalLLaMA, Hacker News (Show HN)
+- [ ] Share in MCP Discord / community channels
+- [ ] Write use-case guides (e.g. "Add Postgres to Claude Code in 30 seconds")
+- [ ] Add GitHub Discussions for Q&A and feature requests
 
 ## License
 
