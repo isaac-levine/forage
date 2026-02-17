@@ -2,11 +2,14 @@
 
 **Self-improving tool discovery for AI agents.**
 
+[![npm version](https://img.shields.io/npm/v/forage-mcp.svg)](https://www.npmjs.com/package/forage-mcp)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 Forage is an MCP server that lets AI agents discover, install, and learn to use new tools — automatically. When an agent hits a wall, it forages for the right tool, installs it, and teaches itself how to use it. The agent gets permanently smarter.
 
 ## The Problem
 
-AI coding agents are limited to whatever tools they're configured with at session start. When an agent needs to query a database, deploy to Vercel, or search Slack, it apologizes and the human manually installs the right MCP server. This is the bottleneck.
+AI coding agents are limited to whatever tools they're configured with at session start. When an agent needs to query a database, deploy to Vercel, or search Slack, it apologizes and the human manually installs the right MCP server. This is the bottleneck of agentic development.
 
 ## The Solution
 
@@ -41,7 +44,7 @@ Then start a new session. Forage is ready.
 
 | Tool | Description |
 |---|---|
-| `forage_search` | Search for MCP servers across Official Registry, Smithery, and npm |
+| `forage_search` | Search for MCP servers across the [Official MCP Registry](https://registry.modelcontextprotocol.io), [Smithery](https://smithery.ai), and [npm](https://www.npmjs.com) |
 | `forage_evaluate` | Get details on a package — downloads, README, install command |
 | `forage_install` | Install and start an MCP server as a proxied subprocess (requires user approval) |
 | `forage_learn` | Write usage instructions to CLAUDE.md / AGENTS.md / .cursor/rules/ |
@@ -53,7 +56,7 @@ Then start a new session. Forage is ready.
 Forage is an MCP server that acts as a **gateway/proxy**:
 
 1. **You install Forage once** — it's the only MCP server you configure manually
-2. **Forage discovers tools** — searches the Official MCP Registry, Smithery, and npm
+2. **Forage discovers tools** — searches the Official MCP Registry, Smithery, and npm in parallel
 3. **Forage installs tools** — starts them as child processes, wraps their capabilities
 4. **No restart needed** — Forage emits `list_changed` notifications, agent picks up new tools instantly
 5. **Knowledge persists** — `forage_learn` writes to agent rule files, manifest auto-starts tools next session
@@ -83,15 +86,28 @@ Forage is an MCP server that acts as a **gateway/proxy**:
 └─────────────────────────────────────────────┘
 ```
 
+### The Proxy Pattern
+
+When you install a tool through Forage:
+
+1. Forage runs `npx -y <package>` as a child process
+2. Connects to it via `StdioClientTransport` (MCP client)
+3. Discovers the child server's tools via `listTools`
+4. Re-registers each tool on the Forage server with a namespaced name (`foraged__<server>__<tool>`)
+5. Sends `tools/list_changed` notification — the agent sees new tools immediately
+6. When the agent calls a proxied tool, Forage forwards the call to the child server
+
 ## Persistence
 
 Forage stores its state in `~/.forage/`:
 
-- `manifest.json` — installed tools, auto-start configuration
-- `install-log.json` — audit trail of all installs/uninstalls
-- `cache/` — cached registry search results
+| File | Purpose |
+|---|---|
+| `manifest.json` | Installed tools, command/args, auto-start configuration |
+| `install-log.json` | Audit trail of all installs and uninstalls |
+| `cache/` | Cached registry search results |
 
-On startup, Forage reads the manifest and auto-starts all previously installed servers.
+On startup, Forage reads the manifest and auto-starts all previously installed servers. Your agent picks up right where it left off.
 
 ## CLI
 
@@ -106,10 +122,36 @@ forage init --client cursor          # Set up for Cursor
 
 ## Security
 
-- **Human approval required** — `forage_install` always requires explicit confirmation
-- **Audit trail** — every install/uninstall is logged to `~/.forage/install-log.json`
-- **No remote backend** — everything runs locally, registry searches are read-only GET requests
+- **Human approval required** — `forage_install` always requires explicit `confirm: true`. The agent cannot install tools without the user approving the tool call.
+- **Audit trail** — every install/uninstall is logged with timestamps to `~/.forage/install-log.json`
+- **No remote backend** — everything runs locally. Registry searches are read-only GET requests to public APIs.
+- **No secrets stored** — environment variables for child servers are passed at install time, not persisted.
+
+## Development
+
+```bash
+git clone https://github.com/isaac-levine/forage.git
+cd forage
+npm install
+npm run build
+```
+
+Test locally with Claude Code:
+
+```bash
+claude mcp add forage-dev -- node /path/to/forage/dist/server.js
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
+
+## Roadmap
+
+- [ ] `forage update` — check for newer versions of installed tools
+- [ ] Support for pip/cargo/brew packages (not just npm)
+- [ ] Smarter search ranking (weight by downloads, stars, description relevance)
+- [ ] `server.json` submission to the Official MCP Registry
+- [ ] Landing page at forage.dev
 
 ## License
 
-MIT
+[MIT](LICENSE)
