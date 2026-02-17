@@ -1,0 +1,46 @@
+{
+  "name": "forage-mcp",
+  "version": "0.1.0",
+  "description": "Self-improving tool discovery for AI agents. Agents find, install, and learn to use new tools automatically.",
+  "type": "module",
+  "main": "dist/server.js",
+  "bin": {
+    "forage": "./dist/cli.js",
+    "forage-mcp": "./dist/server.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/server.js",
+    "lint": "tsc --noEmit"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "ai-agents",
+    "tool-discovery",
+    "claude-code",
+    "cursor",
+    "codex"
+  ],
+  "author": "Isaac Levine",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/isaac-levine/forage"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ]
+}
