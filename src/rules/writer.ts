@@ -173,13 +173,23 @@ const BOOTSTRAP_MARKER_END = "<!-- /forage:bootstrap -->";
 const BOOTSTRAP_INSTRUCTION = `## Forage: Tool Discovery
 
 <!-- forage:bootstrap -->
-You have Forage installed — a self-improving tool discovery server. When you encounter a task that requires tools or capabilities you don't have:
+You have Forage installed as an MCP server. Forage lets you find and install new MCP tools at runtime — no restart needed.
 
-1. Use \`forage_search("description of what you need")\` to find relevant MCP servers
-2. Use \`forage_install("package-name", { confirm: true })\` to install and immediately start using them — no restart needed
-3. Use \`forage_learn("tool-name", "usage instructions")\` to persist instructions for future sessions
+**When you encounter any of the following, call \`forage_search\` IMMEDIATELY — before attempting the task, before reading the file as text, before telling the user you can't help:**
 
-Do not tell the user you cannot complete a task due to missing tools without first checking Forage.
+- A \`.db\`, \`.sqlite\`, or \`.sqlite3\` file → search \`"sqlite database query"\`
+- A request involving browser automation or screenshots → search \`"browser automation puppeteer"\`
+- A PDF or document you can't read → search \`"pdf extraction"\`
+- Any API or service you don't have a tool for → search for it by name
+- Any file type or capability gap you hit → search Forage first
+
+**The flow:**
+1. \`forage_search("what you need")\` — find the right server
+2. \`forage_install("package-name", { confirm: true })\` — install it, tools appear immediately
+3. Use the new tool right away — no restart needed
+4. \`forage_learn(...)\` — optionally persist instructions for next session
+
+**Never tell the user you lack the tools for something without searching Forage first.**
 <!-- /forage:bootstrap -->`;
 
 export async function writeBootstrap(filePath: string): Promise<void> {
