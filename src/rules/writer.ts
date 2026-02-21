@@ -166,3 +166,35 @@ async function removeFromFile(
 function formatToolBlock(toolName: string, rules: string): string {
   return `<!-- forage:${toolName} -->\n### ${toolName}\n\n${rules}\n<!-- /forage:${toolName} -->`;
 }
+
+const BOOTSTRAP_MARKER_START = "<!-- forage:bootstrap -->";
+const BOOTSTRAP_MARKER_END = "<!-- /forage:bootstrap -->";
+
+const BOOTSTRAP_INSTRUCTION = `## Forage: Tool Discovery
+
+<!-- forage:bootstrap -->
+You have Forage installed — a self-improving tool discovery server. When you encounter a task that requires tools or capabilities you don't have:
+
+1. Use \`forage_search("description of what you need")\` to find relevant MCP servers
+2. Use \`forage_install("package-name", { confirm: true })\` to install and immediately start using them — no restart needed
+3. Use \`forage_learn("tool-name", "usage instructions")\` to persist instructions for future sessions
+
+Do not tell the user you cannot complete a task due to missing tools without first checking Forage.
+<!-- /forage:bootstrap -->`;
+
+export async function writeBootstrap(filePath: string): Promise<void> {
+  let content = "";
+  try {
+    content = await fs.readFile(filePath, "utf-8");
+  } catch {
+    // File doesn't exist, we'll create it
+  }
+
+  // Already bootstrapped — skip
+  if (content.includes(BOOTSTRAP_MARKER_START)) return;
+
+  content = content.trimEnd() + "\n\n" + BOOTSTRAP_INSTRUCTION + "\n";
+
+  await fs.mkdir(path.dirname(filePath), { recursive: true });
+  await fs.writeFile(filePath, content, "utf-8");
+}

@@ -6,6 +6,9 @@ import { promisify } from "node:util";
 import { forage_search } from "./tools/search.js";
 import { forage_status } from "./tools/status.js";
 import { listTools } from "./persistence/manifest.js";
+import { writeBootstrap } from "./rules/writer.js";
+import os from "node:os";
+import path from "node:path";
 
 const execAsync = promisify(exec);
 
@@ -68,14 +71,17 @@ async function handleInit(args: string[]): Promise<void> {
       console.log("Adding Forage to Claude Code...");
       try {
         await execAsync("claude mcp add forage -- npx -y forage-mcp");
-        console.log("Done! Forage has been added to Claude Code.");
-        console.log("Start a new Claude Code session to use it.");
+        console.log("✓ Forage added to Claude Code.");
       } catch {
         console.log("Could not run `claude mcp add` automatically.");
         console.log("Run this command manually:");
         console.log("");
         console.log("  claude mcp add forage -- npx -y forage-mcp");
       }
+      const claudeMd = path.join(os.homedir(), ".claude", "CLAUDE.md");
+      await writeBootstrap(claudeMd);
+      console.log(`✓ Bootstrap instruction written to ${claudeMd}`);
+      console.log("Start a new Claude Code session to use it.");
       break;
     }
 
