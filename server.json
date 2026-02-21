@@ -1,16 +1,17 @@
 {
-  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
-  "name": "forage",
-  "description": "Self-improving tool discovery for AI agents. Discover, install, and learn to use new MCP servers automatically — no restarts needed. Searches the Official MCP Registry, Smithery, and npm.",
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.isaac-levine/forage",
+  "description": "Self-improving tool discovery for AI agents. Find, install, and use new MCP servers automatically.",
   "repository": {
     "url": "https://github.com/isaac-levine/forage",
     "source": "github"
   },
-  "version": "0.1.0",
+  "version": "0.1.1",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "forage-mcp",
+      "version": "0.1.1",
       "transport": {
         "type": "stdio"
       }
